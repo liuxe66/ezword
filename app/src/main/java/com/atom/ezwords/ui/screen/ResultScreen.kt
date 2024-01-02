@@ -1,5 +1,7 @@
 package com.atom.ezwords.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
@@ -19,27 +21,35 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.atom.ezwords.ui.theme.ActBg
 import com.atom.ezwords.ui.theme.Btnbg
+import com.atom.ezwords.utils.DataStoreUtil
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  *  author : liuxe
@@ -47,14 +57,23 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
  *  description :
  */
 @Composable
-fun ResultScreen(controller: NavController, totalNum: String) {
+fun ResultScreen(controller: NavController, totalNum: String, onShareClick: () -> Unit) {
     val uiController = rememberSystemUiController()
     SideEffect {
         uiController.setStatusBarColor(Color.Transparent)
         uiController.statusBarDarkContentEnabled = true
+
     }
     val lottieLuhua by rememberLottieComposition(LottieCompositionSpec.Asset("lt_lihua.json"))
     val lottieRibbon by rememberLottieComposition(LottieCompositionSpec.Asset("lt_ribbon.json"))
+
+    val dataStore = DataStoreUtil(LocalContext.current)
+
+    LaunchedEffect(Unit) {
+        dataStore.saveScore(totalNum)
+    }
+
+    val lifecycle = rememberCoroutineScope()
 
 
     var numStr = totalNum
@@ -143,12 +162,12 @@ fun ResultScreen(controller: NavController, totalNum: String) {
                     .background(
                         color = Color.White, shape = RoundedCornerShape(16.dp)
                     )
-                    .clickable(indication = null,
+                    .clickable(
+                        indication = null,
                         interactionSource = remember { MutableInteractionSource() },
-                        onClick = {
-
-                        })
-                    .padding(vertical = 12.dp, horizontal = 36.dp)
+                        onClick = onShareClick
+                    )
+                    .padding(vertical = 16.dp, horizontal = 24.dp)
             )
             Text(
                 text = "重新测试",
@@ -164,11 +183,11 @@ fun ResultScreen(controller: NavController, totalNum: String) {
                     .clickable(indication = null,
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
-                            controller.navigate("play"){
+                            controller.navigate("play") {
                                 popUpTo("result") { inclusive = true }
                             }
                         })
-                    .padding(vertical = 12.dp, horizontal = 36.dp)
+                    .padding(vertical = 16.dp, horizontal = 48.dp)
             )
         }
     }
@@ -191,7 +210,6 @@ fun NumView(num: Int = 9) {
             .size(70.dp)
             .background(color = Color.Black, shape = RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
-
     ) {
         Text(text = value.toString(),
             fontSize = 30.sp,

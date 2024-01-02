@@ -16,5 +16,5 @@ val ActBg = Color(0XFFF0F0F0)
 val F5Bg = Color(0XFFF5F5F5)
 
 val RightBg = Color(0x44A1F37D)
-val RightColor = Color(0xFFA1F37D)
+val RightColor = Color(0xFF73EC3E)
 val ErrorBg = Color(0x44F4A1A1)

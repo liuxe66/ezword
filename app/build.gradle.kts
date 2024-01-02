@@ -67,6 +67,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+
     //图片加载库
     implementation ("io.coil-kt:coil-compose:2.4.0")
 
@@ -81,6 +83,7 @@ dependencies {
 
     //导航
     implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     //google-占位
     implementation("com.google.accompanist:accompanist-placeholder-material:0.16.1")
@@ -92,4 +95,19 @@ dependencies {
 
     implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation ("com.google.accompanist:accompanist-navigation-animation:0.16.0")
+
+    //CameraX
+    val camerax_version = "1.3.0-alpha04"
+    implementation("androidx.camera:camera-core:$camerax_version")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-video:${camerax_version}")
+
+    implementation("androidx.camera:camera-view:${camerax_version}" )
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
+
+    //accompanist处理权限依赖库
+    val accompanist_version = "0.31.2-alpha"
+    implementation("com.google.accompanist:accompanist-permissions:$accompanist_version")
+
 }

@@ -18,11 +18,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.atom.ezwords.R
@@ -56,10 +60,15 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun PlayScreen(controller: NavController, examVM: ExamVM) {
 
-    BackHandler(enabled = true) {
-        controller.popBackStack()
-        examVM.initState()
+    var dialogState by remember {
+        mutableStateOf(false)
     }
+
+    BackHandler(enabled = true) {
+        dialogState = true
+        controller.popBackStack()
+    }
+
     val uiController = rememberSystemUiController()
     SideEffect {
         uiController.setStatusBarColor(Color.Transparent)
@@ -71,22 +80,15 @@ fun PlayScreen(controller: NavController, examVM: ExamVM) {
         examVM.getExam(500, 1000)
     }
 
-    LaunchedEffect(examVM.rank) {
-
-        "examVM.rank:${examVM.rank}".logE()
-    }
-
     LaunchedEffect(examVM.finished) {
         //完成
         if (examVM.finished) {
             controller.navigate("result?totalNum=${examVM.rank}") {
                 popUpTo("play") { inclusive = true }
-                examVM.initState()
             }
         }
     }
-
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -184,25 +186,6 @@ fun PlayScreen(controller: NavController, examVM: ExamVM) {
                                         .fillMaxWidth()
                                         .padding(vertical = 20.dp)
                                 )
-
-//                                Surface(
-//                                    color = Color.Transparent,
-//                                    shape = RoundedCornerShape(24.dp),
-//                                    border = BorderStroke(1.dp, Color.Black),
-//                                    modifier = Modifier
-//                                        .align(Alignment.CenterStart)
-//                                        .padding(start = 24.dp)
-//                                ) {
-//                                    Text(
-//                                        text = "E",
-//                                        color = Color.Black,
-//                                        fontSize = 18.sp,
-//                                        fontFamily = FontFamily.Monospace,
-//                                        fontWeight = FontWeight.Bold,
-//                                        textAlign = TextAlign.Center,
-//                                        modifier = Modifier.size(24.dp)
-//                                    )
-//                                }
                             }
 
                         }
@@ -245,6 +228,40 @@ fun PlayScreen(controller: NavController, examVM: ExamVM) {
         }
 
     }
+}
+
+@Composable
+fun showBackDialog(dialogState: MutableState<Boolean>) {
+    if (dialogState.value) {
+        Dialog(
+            onDismissRequest = {
+                dialogState.value = false
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            ),
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp), color = Color.White
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.align(Alignment.TopCenter), text = "top"
+                    )
+                    Text("center")
+                    Text(
+                        modifier = Modifier.align(Alignment.BottomCenter), text = "bottom"
+                    )
+                }
+            }
+        }
+    }
+
 }
 
 @Preview
