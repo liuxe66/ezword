@@ -36,12 +36,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.atom.ezwords.ui.theme.ActBg
 import com.atom.ezwords.ui.theme.Btnbg
+import com.atom.ezwords.ui.vm.ExamVM
 import com.atom.ezwords.utils.DataStoreUtil
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -159,22 +161,6 @@ fun HomeScreen(controller: NavController) {
                     interactionSource = remember { MutableInteractionSource() },
                     onClick = {
                         controller.navigate("vision")
-                    })
-        )
-
-        Text(
-            text = "测心率？",
-            color = Color.Gray,
-            fontSize = 16.sp,
-            fontFamily = FontFamily.Default,
-            textAlign = TextAlign.Center,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .clickable(indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = {
-                        controller.navigate("heartRate")
                     })
         )
     }

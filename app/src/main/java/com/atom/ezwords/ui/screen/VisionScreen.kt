@@ -1,6 +1,7 @@
 package com.atom.ezwords.ui.screen
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.atom.ezwords.R
 import com.atom.ezwords.data.entity.Vision
@@ -57,7 +59,8 @@ import kotlinx.coroutines.launch
  *  description :
  */
 @Composable
-fun VisionScreen(controller: NavController, visionVM: VisionVM) {
+fun VisionScreen(controller: NavController) {
+    val visionVM: VisionVM = viewModel()
     val scrollState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val uiController = rememberSystemUiController()
@@ -67,6 +70,7 @@ fun VisionScreen(controller: NavController, visionVM: VisionVM) {
     }
     val visionData by visionVM.visionState.collectAsState()
     LaunchedEffect(Unit) {
+        visionVM.initState()
         visionVM.getVision()
     }
 

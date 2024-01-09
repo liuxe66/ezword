@@ -67,14 +67,6 @@ fun ResultScreen(controller: NavController, totalNum: String, onShareClick: () -
     val lottieLuhua by rememberLottieComposition(LottieCompositionSpec.Asset("lt_lihua.json"))
     val lottieRibbon by rememberLottieComposition(LottieCompositionSpec.Asset("lt_ribbon.json"))
 
-    val dataStore = DataStoreUtil(LocalContext.current)
-
-    LaunchedEffect(Unit) {
-        dataStore.saveScore(totalNum)
-    }
-
-    val lifecycle = rememberCoroutineScope()
-
 
     var numStr = totalNum
     when (totalNum.length) {

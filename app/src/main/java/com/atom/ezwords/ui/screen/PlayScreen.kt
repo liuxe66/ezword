@@ -2,12 +2,14 @@ package com.atom.ezwords.ui.screen
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +51,7 @@ import com.atom.ezwords.ui.theme.ErrorBg
 import com.atom.ezwords.ui.theme.F5Bg
 import com.atom.ezwords.ui.theme.RightBg
 import com.atom.ezwords.ui.vm.ExamVM
+import com.atom.ezwords.utils.DataStoreUtil
 import com.atom.ezwords.utils.logE
 import com.google.accompanist.insets.statusBarsHeight
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -58,15 +62,26 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
  *  description :
  */
 @Composable
-fun PlayScreen(controller: NavController, examVM: ExamVM) {
-
+fun PlayScreen(controller: NavController) {
+    val examVM: ExamVM = viewModel()
+    //当点击返回按钮时，询问是否弹窗
     var dialogState by remember {
         mutableStateOf(false)
     }
 
+    //datastore保存数据
+    val dataStore = DataStoreUtil(LocalContext.current)
     BackHandler(enabled = true) {
         dialogState = true
-        controller.popBackStack()
+    }
+
+    if (dialogState) {
+        showBackDialog(onDimiss = {
+            dialogState = false
+        }, onOk = {
+            dialogState = false
+            controller.popBackStack()
+        })
     }
 
     val uiController = rememberSystemUiController()
@@ -77,18 +92,20 @@ fun PlayScreen(controller: NavController, examVM: ExamVM) {
 
     val examData by examVM.wordExamFlow.collectAsState()
     LaunchedEffect(Unit) {
+        examVM.initState()
         examVM.getExam(500, 1000)
     }
 
     LaunchedEffect(examVM.finished) {
         //完成
         if (examVM.finished) {
+            dataStore.saveScore(examVM.rank.toString())
             controller.navigate("result?totalNum=${examVM.rank}") {
                 popUpTo("play") { inclusive = true }
             }
         }
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -230,36 +247,77 @@ fun PlayScreen(controller: NavController, examVM: ExamVM) {
     }
 }
 
+@Preview
 @Composable
-fun showBackDialog(dialogState: MutableState<Boolean>) {
-    if (dialogState.value) {
-        Dialog(
-            onDismissRequest = {
-                dialogState.value = false
-            },
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false
-            ),
+fun showBackDialog(
+    onDimiss: () -> Unit = {},
+    onOk: () -> Unit = {},
+) {
+
+    Dialog(
+        onDismissRequest = {
+            onDimiss.invoke()
+        },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = true
+        ),
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White, shape = RoundedCornerShape(16.dp)
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp), color = Color.White
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.TopCenter), text = "top"
-                    )
-                    Text("center")
-                    Text(
-                        modifier = Modifier.align(Alignment.BottomCenter), text = "bottom"
-                    )
-                }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                modifier = Modifier,
+                text = "提示",
+                fontSize = 18.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+            )
+
+            Text(
+                modifier = Modifier.padding(24.dp),
+                text = "测试还未完成，现在退出不保留数据，确认退出？",
+                fontSize = 16.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold,
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 24.dp)
+                        .clickable {
+                            onDimiss.invoke()
+                        },
+                    text = "取消",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = "退出",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            onOk.invoke()
+                        }
+                        .padding(bottom = 24.dp))
             }
+
         }
+
+
     }
 
 }
@@ -279,7 +337,6 @@ fun SelectionItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp)
-            .bounceClick()
             .clickable(indication = null,
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
@@ -301,31 +358,6 @@ fun SelectionItem(
                     .fillMaxWidth()
                     .padding(vertical = 20.dp)
             )
-
-//            Surface(
-//                color = Color.Transparent,
-//                shape = RoundedCornerShape(24.dp),
-//                border = BorderStroke(1.dp, Color.Black),
-//                modifier = Modifier
-//                    .align(Alignment.CenterStart)
-//                    .padding(start = 24.dp)
-//            ) {
-//                Text(
-//                    text = when (index) {
-//                        0 -> "A"
-//                        1 -> "B"
-//                        2 -> "C"
-//                        3 -> "D"
-//                        else -> "E"
-//                    },
-//                    color = Color.Black,
-//                    fontSize = 18.sp,
-//                    fontFamily = FontFamily.Monospace,
-//                    fontWeight = FontWeight.Bold,
-//                    textAlign = TextAlign.Center,
-//                    modifier = Modifier.size(24.dp)
-//                )
-//            }
 
 
             if (option.state != 0) {

@@ -61,6 +61,7 @@ class ExamVM : BaseVM() {
         repo.getExamWord(start, end).load({
             wordExam = WordExamIO.trans(it.result.wordExam)
             delay(800)
+            qNum++
             wordExamFlow.emit(wordExam)
         })
     }
@@ -83,7 +84,6 @@ class ExamVM : BaseVM() {
             finished = true
         } else {
             //判断结果
-            qNum++
             getNextExam(start, end)
         }
 
@@ -115,7 +115,6 @@ class ExamVM : BaseVM() {
             finished = true
         } else {
             //判断结果
-            qNum++
             if (wordExam.correctIndex == index) {
                 rank = wordExam.correctRank.toInt()
                 start = rank + 500

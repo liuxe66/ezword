@@ -5,17 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.atom.ezwords.ui.screen.HeartRateScreen
 import com.atom.ezwords.ui.screen.HomeScreen
 import com.atom.ezwords.ui.screen.PlayScreen
 import com.atom.ezwords.ui.screen.ResultScreen
@@ -52,20 +49,12 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(controller = navController)
                         }
-                        composable("heartRate") {
-                            val visionVM: VisionVM by viewModels()
-                            visionVM.initState()
-                            HeartRateScreen(controller = navController)
-                        }
                         composable("vision") {
-                            val visionVM: VisionVM by viewModels()
-                            visionVM.initState()
-                            VisionScreen(controller = navController, visionVM = visionVM)
+                            VisionScreen(controller = navController)
                         }
                         composable("play") {
-                            val examVM: ExamVM by viewModels()
-                            examVM.initState()
-                            PlayScreen(controller = navController, examVM = examVM)
+
+                            PlayScreen(controller = navController)
                         }
                         composable(
                             "result?totalNum={totalNum}",
