@@ -14,9 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.atom.ezwords.ui.screen.HomeScreen
+import com.atom.ezwords.ui.screen.MuyuScreen
 import com.atom.ezwords.ui.screen.PlayScreen
 import com.atom.ezwords.ui.screen.ResultScreen
+import com.atom.ezwords.ui.screen.ShopScreen
 import com.atom.ezwords.ui.screen.VisionScreen
+import com.atom.ezwords.ui.screen.count_money.CountMoneyScreen
 import com.atom.ezwords.ui.theme.EZwordsTheme
 import com.atom.ezwords.ui.vm.ExamVM
 import com.atom.ezwords.ui.vm.VisionVM
@@ -49,11 +52,19 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(controller = navController)
                         }
+                        composable("count_money"){
+                            CountMoneyScreen(controller = navController)
+                        }
+                        composable("ShopScreen"){
+                            ShopScreen()
+                        }
                         composable("vision") {
                             VisionScreen(controller = navController)
                         }
+                        composable("muyu") {
+                            MuyuScreen(controller = navController)
+                        }
                         composable("play") {
-
                             PlayScreen(controller = navController)
                         }
                         composable(

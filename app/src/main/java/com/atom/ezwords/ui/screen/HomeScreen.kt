@@ -1,6 +1,8 @@
 package com.atom.ezwords.ui.screen
 
+import androidx.compose.animation.core.AnimationEndReason
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -17,17 +19,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -46,6 +51,7 @@ import com.atom.ezwords.ui.theme.Btnbg
 import com.atom.ezwords.ui.vm.ExamVM
 import com.atom.ezwords.utils.DataStoreUtil
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 /**
  *  author : liuxe
@@ -117,12 +123,9 @@ fun HomeScreen(controller: NavController) {
                        .background(
                            color = Color.White, shape = RoundedCornerShape(16.dp)
                        )
-                       .bounceClick()
-                       .clickable(indication = null,
-                           interactionSource = remember { MutableInteractionSource() },
-                           onClick = {
-                               controller.navigate("result?totalNum=${score}")
-                           })
+                       .bounceClick {
+                           controller.navigate("result?totalNum=${score}")
+                       }
                        .padding(vertical = 16.dp, horizontal = 24.dp)
                )
            }
@@ -138,12 +141,9 @@ fun HomeScreen(controller: NavController) {
                     .background(
                         color = Btnbg, shape = RoundedCornerShape(16.dp)
                     )
-                    .bounceClick()
-                    .clickable(indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                        onClick = {
-                            controller.navigate("play")
-                        })
+                    .bounceClick{
+                        controller.navigate("play")
+                    }
                     .padding(vertical = 16.dp, horizontal = 48.dp)
             )
         }
@@ -163,16 +163,34 @@ fun HomeScreen(controller: NavController) {
                         controller.navigate("vision")
                     })
         )
+
+        Text(
+            text = "电子木鱼",
+            color = Color.Gray,
+            fontSize = 16.sp,
+            fontFamily = FontFamily.Default,
+            textAlign = TextAlign.Center,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .clickable(indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = {
+//                        controller.navigate("muyu")
+                        controller.navigate("count_money")
+                    })
+        )
     }
 
 }
 
+
 enum class ButtonState { Pressed, Idle }
 
-fun Modifier.bounceClick() = composed {
+fun Modifier.bounceClick(onClick: () -> Unit) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(
-        if (buttonState == ButtonState.Pressed) 0.80f else 1f, label = ""
+        if (buttonState == ButtonState.Pressed) 0.85f else 1f, label = ""
     )
 
     this
@@ -180,9 +198,11 @@ fun Modifier.bounceClick() = composed {
             scaleX = scale
             scaleY = scale
         }
-        .clickable(interactionSource = remember { MutableInteractionSource() },
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
             indication = null,
-            onClick = { })
+            onClick = onClick
+        )
         .pointerInput(buttonState) {
             awaitPointerEventScope {
                 buttonState = if (buttonState == ButtonState.Pressed) {
@@ -194,4 +214,13 @@ fun Modifier.bounceClick() = composed {
                 }
             }
         }
+}
+
+fun Modifier.withClick(onClick: () -> Unit) = composed {
+
+    this.clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick
+    )
 }

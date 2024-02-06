@@ -262,13 +262,11 @@ fun StartItem(viewModel: VisionVM = VisionVM()) {
                             .background(
                                 color = Btnbg, shape = RoundedCornerShape(10.dp)
                             )
-                            .bounceClick()
-                            .clickable(indication = null,
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = {
-                                    viewModel.start()
-                                    viewModel.isStart = true
-                                })
+                            .bounceClick{
+                                viewModel.start()
+                                viewModel.isStart = true
+                            }
+
                     }
 
                 ) {
@@ -352,16 +350,14 @@ fun QuestionItem(
                             Modifier
                                 .padding(bottom = 10.dp)
                                 .fillMaxWidth()
-                                .bounceClick()
+                                .bounceClick{
+                                    viewModel.onSelect(qindex, index)
+                                }
                                 .background(
                                     color = if (data.options[index].state == 0) ActBg else RightBg,
                                     shape = RoundedCornerShape(10.dp)
                                 )
-                                .clickable(indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = {
-                                        viewModel.onSelect(qindex, index)
-                                    })
+
                         }
 
                     ) {

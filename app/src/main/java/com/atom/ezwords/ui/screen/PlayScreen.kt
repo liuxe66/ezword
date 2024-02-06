@@ -1,8 +1,6 @@
 package com.atom.ezwords.ui.screen
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,7 +50,6 @@ import com.atom.ezwords.ui.theme.F5Bg
 import com.atom.ezwords.ui.theme.RightBg
 import com.atom.ezwords.ui.vm.ExamVM
 import com.atom.ezwords.utils.DataStoreUtil
-import com.atom.ezwords.utils.logE
 import com.google.accompanist.insets.statusBarsHeight
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -182,12 +179,9 @@ fun PlayScreen(controller: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 5.dp)
-                                .bounceClick()
-                                .clickable(indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = {
-                                        examVM.onClickDont()
-                                    })
+                                .bounceClick {
+                                    examVM.onClickDont()
+                                }
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxWidth()
@@ -227,7 +221,6 @@ fun PlayScreen(controller: NavController) {
                     fontFamily = FontFamily.Default,
                     textAlign = TextAlign.Companion.Center,
                     modifier = Modifier
-                        .bounceClick()
                         .fillMaxWidth()
                         .padding(horizontal = 100.dp, vertical = 0.dp)
                         .background(
